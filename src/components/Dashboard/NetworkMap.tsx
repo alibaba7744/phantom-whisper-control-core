@@ -140,7 +140,7 @@ const NetworkMap: React.FC<NetworkMapProps> = ({ nodes, links, className }) => {
   return (
     <div className={cn("bg-card rounded-lg border border-border overflow-hidden", className)}>
       <div className="p-4 border-b border-border">
-        <h2 className="font-semibold">Network Topology</h2>
+        <h2 className="font-semibold">Topologie Réseau</h2>
       </div>
       
       <div className="h-[300px] w-full">
