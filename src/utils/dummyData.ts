@@ -1,4 +1,3 @@
-
 export type Agent = {
   id: string;
   name: string;
@@ -188,16 +187,16 @@ export const logs: LogEntry[] = [
 
 export const networkData = {
   nodes: [
-    { id: "center", name: "C2 Server", type: "server", status: "online" },
-    { id: "a1", name: "SENTINEL-01", type: "agent", status: "online" },
-    { id: "a2", name: "SHADOW-02", type: "agent", status: "online" },
-    { id: "a3", name: "PHANTOM-03", type: "agent", status: "online" },
-    { id: "a4", name: "WRAITH-04", type: "agent", status: "offline" },
-    { id: "a5", name: "GHOST-05", type: "agent", status: "online" },
-    { id: "r1", name: "Router-01", type: "router", status: "online" },
-    { id: "r2", name: "Router-02", type: "router", status: "online" },
-    { id: "c1", name: "Client-01", type: "client", status: "compromised" },
-    { id: "c2", name: "Client-02", type: "client", status: "online" }
+    { id: "center", name: "C2 Server", type: "server" as const, status: "online" as const },
+    { id: "a1", name: "SENTINEL-01", type: "agent" as const, status: "online" as const },
+    { id: "a2", name: "SHADOW-02", type: "agent" as const, status: "online" as const },
+    { id: "a3", name: "PHANTOM-03", type: "agent" as const, status: "online" as const },
+    { id: "a4", name: "WRAITH-04", type: "agent" as const, status: "offline" as const },
+    { id: "a5", name: "GHOST-05", type: "agent" as const, status: "online" as const },
+    { id: "r1", name: "Router-01", type: "router" as const, status: "online" as const },
+    { id: "r2", name: "Router-02", type: "router" as const, status: "online" as const },
+    { id: "c1", name: "Client-01", type: "client" as const, status: "compromised" as const },
+    { id: "c2", name: "Client-02", type: "client" as const, status: "online" as const }
   ],
   links: [
     { source: "center", target: "r1", strength: 3 },
