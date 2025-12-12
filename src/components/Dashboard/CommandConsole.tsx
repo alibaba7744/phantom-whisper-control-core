@@ -41,9 +41,10 @@ const CommandConsole: React.FC<CommandConsoleProps> = ({ className }) => {
     {
       id: 'welcome',
       type: 'system',
-      content: '╔══════════════════════════════════════════════════════════════╗\n║           SYSTÈME DE CONTRÔLE C2 - TERMINAL v2.4             ║\n║                                                              ║\n║  [!] Accès restreint - Authentification requise              ║\n║  [?] Tapez "help" pour voir les commandes disponibles        ║\n╚══════════════════════════════════════════════════════════════╝',
+      content:
+        '╔══════════════════════════════════════════════════════════════╗\n║           SYSTÈME DE CONTRÔLE C2 - TERMINAL v2.4             ║\n║                                                              ║\n║  [!] Accès restreint - Authentification requise              ║\n║  [?] Tapez "help" pour voir les commandes disponibles        ║\n╚══════════════════════════════════════════════════════════════╝',
       timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
-    }
+    },
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -65,7 +66,7 @@ const CommandConsole: React.FC<CommandConsoleProps> = ({ className }) => {
       content,
       timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
     };
-    setLines(prev => [...prev, newLine]);
+    setLines((prev) => [...prev, newLine]);
   };
 
   const processCommand = (cmd: string) => {
@@ -77,7 +78,9 @@ const CommandConsole: React.FC<CommandConsoleProps> = ({ className }) => {
 
     switch (command) {
       case 'help':
-        addLine('output', `Commandes disponibles:
+        addLine(
+          'output',
+          `Commandes disponibles:
   help          - Affiche cette aide
   whoami        - Affiche l'utilisateur actuel
   ls [path]     - Liste les fichiers
@@ -87,7 +90,8 @@ const CommandConsole: React.FC<CommandConsoleProps> = ({ className }) => {
   clear         - Effacer le terminal
   id            - Affiche les informations utilisateur
   pwd           - Affiche le répertoire courant
-  uname -a      - Informations système`);
+  uname -a      - Informations système`,
+        );
         break;
 
       case 'whoami':
@@ -95,9 +99,12 @@ const CommandConsole: React.FC<CommandConsoleProps> = ({ className }) => {
         break;
 
       case 'id':
-        addLine('output', isAdmin 
-          ? 'uid=0(root) gid=0(root) groups=0(root)' 
-          : 'uid=1001(guest) gid=1001(guest) groups=1001(guest)');
+        addLine(
+          'output',
+          isAdmin
+            ? 'uid=0(root) gid=0(root) groups=0(root)'
+            : 'uid=1001(guest) gid=1001(guest) groups=1001(guest)',
+        );
         break;
 
       case 'pwd':
@@ -108,10 +115,12 @@ const CommandConsole: React.FC<CommandConsoleProps> = ({ className }) => {
         addLine('output', 'Linux c2-server 5.15.0-generic #1 SMP x86_64 GNU/Linux');
         break;
 
-      case 'ls':
+      case 'ls': {
         const path = args[0] || '';
         if (args.includes('-la') || args.includes('-a')) {
-          addLine('output', `drwxr-xr-x  2 root root 4096 May 21 14:00 .
+          addLine(
+            'output',
+            `drwxr-xr-x  2 root root 4096 May 21 14:00 .
 drwxr-xr-x  3 root root 4096 May 21 13:00 ..
 -rw-r--r--  1 root root  220 May 21 12:00 .bashrc
 -rw-------  1 root root   45 May 21 14:30 .bash_history
@@ -119,7 +128,8 @@ drwxr-xr-x  2 root root 4096 May 21 10:00 etc/
 drwxr-xr-x  3 root root 4096 May 21 11:00 home/
 drwxr-xr-x  2 root root 4096 May 21 09:00 opt/
 drwxr-xr-x  2 root root 4096 May 21 08:00 var/
-${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
+${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`,
+          );
         } else if (path === '/opt' || path === 'opt') {
           addLine('output', `.secret_config`);
         } else if (path === '/etc' || path === 'etc') {
@@ -130,19 +140,29 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
           addLine('output', `etc/  home/  opt/  var/  tmp/`);
         }
         break;
+      }
 
-      case 'cat':
+      case 'cat': {
         if (!args[0]) {
           addLine('error', 'Usage: cat <fichier>');
           break;
         }
-        const filePath = args[0].startsWith('/') ? args[0] : `/${args[0]}`;
-        
-        if (filePath === '/root/flag.txt' || filePath === 'flag.txt') {
+
+        const rawPath = args[0];
+        const filePath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+
+        if (
+          filePath === '/root/flag.txt' ||
+          filePath === '/flag.txt' ||
+          rawPath === 'flag.txt'
+        ) {
           if (isAdmin) {
-            addLine('success', `\n🚩 FÉLICITATIONS! Vous avez trouvé le flag!\n\n${FLAG}\n\n[!] Soumettez ce flag pour valider l'épreuve.`);
+            addLine(
+              'success',
+              `\n🚩 FÉLICITATIONS! Vous avez trouvé le flag!\n\n${FLAG}\n\n[!] Soumettez ce flag pour valider l'épreuve.`,
+            );
           } else {
-            addLine('error', '[ACCÈS REFUSÉ] - Vous devez être root pour lire ce fichier');
+            addLine('error', "[ACCÈS REFUSÉ] - Vous devez être root pour lire ce fichier");
           }
         } else if (FILESYSTEM[filePath]) {
           addLine('output', FILESYSTEM[filePath]);
@@ -150,16 +170,19 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
           addLine('error', `cat: ${args[0]}: Aucun fichier ou dossier de ce type`);
         }
         break;
+      }
 
       case 'su':
         if (!args[0]) {
           addLine('error', 'Usage: su <password>');
-          addLine('output', 'Indice: Trouvez le mot de passe administrateur dans le système...');
+          addLine('output', "Indice: Trouvez le mot de passe administrateur dans le système...");
           break;
         }
         if (args[0] === ADMIN_PASSWORD) {
           setIsAdmin(true);
-          addLine('success', `
+          addLine(
+            'success',
+            `
 ╔══════════════════════════════════════════════════════════════╗
 ║              🔓 ACCÈS ROOT ACCORDÉ                           ║
 ║                                                              ║
@@ -167,15 +190,16 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
 ║  Vous avez maintenant accès complet au système.              ║
 ║                                                              ║
 ║  Indice: Cherchez le fichier flag.txt...                     ║
-╚══════════════════════════════════════════════════════════════╝`);
+╚══════════════════════════════════════════════════════════════╝`,
+          );
         } else {
-          addLine('error', 'su: Échec d\'authentification - Mot de passe incorrect');
+          addLine('error', "su: Échec d'authentification - Mot de passe incorrect");
         }
         break;
 
       case 'hint':
         addLine('system', HINTS[hintIndex % HINTS.length]);
-        setHintIndex(prev => prev + 1);
+        setHintIndex((prev) => prev + 1);
         break;
 
       case 'clear':
@@ -185,7 +209,10 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
       case 'exit':
         if (isAdmin) {
           setIsAdmin(false);
-          addLine('system', 'Déconnexion du compte root. Retour à l\'utilisateur guest.');
+          addLine(
+            'system',
+            "Déconnexion du compte root. Retour à l'utilisateur guest.",
+          );
         } else {
           addLine('output', 'logout');
         }
@@ -202,8 +229,8 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
-    
-    setCommandHistory(prev => [...prev, inputValue]);
+
+    setCommandHistory((prev) => [...prev, inputValue]);
     setHistoryIndex(-1);
     processCommand(inputValue);
     setInputValue('');
@@ -213,7 +240,8 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (commandHistory.length > 0) {
-        const newIndex = historyIndex < commandHistory.length - 1 ? historyIndex + 1 : historyIndex;
+        const newIndex =
+          historyIndex < commandHistory.length - 1 ? historyIndex + 1 : historyIndex;
         setHistoryIndex(newIndex);
         setInputValue(commandHistory[commandHistory.length - 1 - newIndex] || '');
       }
@@ -231,7 +259,7 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
   };
 
   return (
-    <div className={cn("bg-card rounded-lg border border-border flex flex-col h-full", className)}>
+    <div className={cn('bg-card rounded-lg border border-border flex flex-col h-full', className)}>
       <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="flex items-center gap-2">
           <TerminalIcon size={16} className="text-primary" />
@@ -255,32 +283,38 @@ ${isAdmin ? '-r--------  1 root root   32 May 21 14:00 flag.txt' : ''}`);
           <Button variant="ghost" size="icon" className="h-6 w-6">
             <Maximize2 size={14} />
           </Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-muted-foreground hover:text-destructive"
+          >
             <X size={14} />
           </Button>
         </div>
       </div>
-      
-      <div 
+
+      <div
         ref={terminalRef}
         className="flex-1 p-3 overflow-y-auto bg-black/80 font-mono text-sm"
       >
         {lines.map((line) => (
           <div key={line.id} className="mb-1">
-            <pre className={cn(
-              "whitespace-pre-wrap break-words",
-              line.type === 'input' && "text-primary font-bold",
-              line.type === 'output' && "text-muted-foreground",
-              line.type === 'error' && "text-red-500",
-              line.type === 'success' && "text-green-500",
-              line.type === 'system' && "text-secondary"
-            )}>
+            <pre
+              className={cn(
+                'whitespace-pre-wrap break-words',
+                line.type === 'input' && 'text-primary font-bold',
+                line.type === 'output' && 'text-muted-foreground',
+                line.type === 'error' && 'text-red-500',
+                line.type === 'success' && 'text-green-500',
+                line.type === 'system' && 'text-secondary',
+              )}
+            >
               {line.content}
             </pre>
           </div>
         ))}
       </div>
-      
+
       <form onSubmit={handleSubmit} className="p-3 border-t border-border flex gap-2">
         <div className="flex items-center text-primary font-mono text-sm mr-1">
           {isAdmin ? '#' : '$'}
